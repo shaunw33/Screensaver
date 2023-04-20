@@ -1,0 +1,133 @@
+<!-- Andrew Shaun Wilkerson, A15, CIS 430, 3pm -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style> html, body  { margin: 0; }    canvas { display: block; } </style>
+    <title>A15</title>
+</head>
+<body>
+    <canvas id="canvasId"></canvas>
+
+    <script>
+        "use strict";
+        window.onload = function() {
+            var canvas  = document.getElementById("canvasId")
+            var ctx     = canvas.getContext("2d")
+            var width   = canvas.width  = window.innerWidth
+            var height  = canvas.height = window.innerHeight
+    
+            var particle = {
+                x:  0,
+                y:  0,
+                dx: 0,
+                dy: 0,
+                w:  0,
+                h:  0,
+                c:  "#000",
+
+                create: function(x, y, dx, dy, w, h) {
+                    var obj = Object.create(this)
+                    obj.x   = x
+                    obj.y   = y
+                    obj.dx  = dx
+                    obj.dy  = dy
+                    obj.w   = w
+                    obj.h   = h
+                    obj.c   = getRandomColor()
+                    return obj
+                },
+
+                move: function() {
+                    this.x += this.dx
+                    this.y += this.dy
+                    if (this.x + this.w > width  || this.x - this.w < 0) { 
+                        this.dx = this.dx * -1 
+                    }
+                    if (this.y + this.h > height || this.y - this.h  < 0) { 
+                        this.dy = this.dy * -1 
+                    }
+                }
+            }
+
+            function randomSign(){
+                return Math.random() < 0.5 ? -1 : 1 
+            }
+
+            var   p = []
+            const numParticles = 50
+            
+            for (let i = 0; i < numParticles; i++) {
+                p[i] = particle.create(
+                    findSpawnWidth(i), 
+                    findSpawnHeight(i), 
+                    Math.random() * 2 * randomSign(), 
+                    Math.random() * 2 * randomSign(),
+                    randomNumber(45,90),
+                    randomNumber(45,90)
+                )
+            }
+
+            function randomNumber(min, max) {
+                return Math.random() * (max - min) + min;   
+            }
+
+            function findSpawnWidth(i){
+                var spawnpoint = i%4
+                switch (spawnpoint){
+                    case 0:
+                        return width/4
+                    case 1:
+                        return width * (3/4)
+                    case 2: 
+                        return width * (3/4)
+                    case 3: 
+                        return width/4
+
+                }
+            }
+            function findSpawnHeight(i){
+                var spawnpoint = i%4
+                switch (spawnpoint){
+                    case 0:
+                        return height/4
+                    case 1: 
+                        return height/4
+                    case 2: 
+                        return height * (3/4)
+                    case 3:
+                        return height * (3/4)
+
+
+                }
+            }
+
+            update();    
+
+            function update() {
+                ctx.clearRect(0, 0, width, height)                
+                for (let i = 0; i < numParticles; i++) {
+                    ctx.beginPath()
+                    ctx.rect(p[i].x,p[i].y , p[i].w, p[i].h)
+                    ctx.fillStyle = p[i].c
+                    ctx.fill()
+                    ctx.stroke()
+                    ctx.closePath()
+                    p[i].move();
+                }
+                requestAnimationFrame(update);
+            }
+
+            function getRandomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++ ) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
+        }
+    </script>
+</body>
+</html>
